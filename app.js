@@ -10,7 +10,7 @@ var usersRouter = require('./routes/users');
 var app = express();
 
 //Test the file
-console.log(config);
+//console.log(config);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
