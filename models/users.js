@@ -14,6 +14,20 @@ var Users = new Schema({
     required: [true, 'Please enter a username'],
     unique: [true, 'Usernames must be unique']
   },
+  hash: {
+    type: String,
+    required: [
+      true,   
+      'There was a problem creating your password'
+    ]
+  },
+  salt: {
+    type: String,
+    required: [
+      true, 
+      'There was a problem creating your password'
+    ]
+  },
   first_name: String,
   last_name: String,
   admin: {
