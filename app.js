@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var apiUsersRouter = require('./routes/api/users');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var LocalStrategy = require('passport-local').Strategy;
@@ -13,7 +14,8 @@ var Users = require('./models/users');
 var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var config = require('./config.dev');
-var apiUsersRouter = require('./routes/api/users');
+var apiAuthRouter = require('./routes/api/auth');
+
 
 var app = express();
 
@@ -54,6 +56,7 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/users', apiUsersRouter);
+app.use('/api/auth', apiAuthRouter);
 
 passport.use(Users.createStrategy());
 passport.serializeUser(function(user, done){
