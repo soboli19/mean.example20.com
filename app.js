@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var apiUsersRouter = require('./routes/api/users');
+var apiAuthRouter = require('./routes/api/auth');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var LocalStrategy = require('passport-local').Strategy;
@@ -14,7 +15,7 @@ var Users = require('./models/users');
 var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var config = require('./config.dev');
-var apiAuthRouter = require('./routes/api/auth');
+
 
 
 var app = express();
