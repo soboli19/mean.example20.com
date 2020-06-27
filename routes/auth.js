@@ -5,4 +5,10 @@ router.get('/', function(req, res, next) {
   res.render('auth/index', { title: 'User Authentication' });
 });
 
+router.get('/logout', function(req, res){
+  req.logout();
+  //console.log(req.session);
+  res.redirect('/auth');
+});
+
 module.exports = router;
