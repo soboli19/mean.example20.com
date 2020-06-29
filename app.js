@@ -1,36 +1,28 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+var passport = require('passport');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var Users = require('./models/users');
+var authRouter = require('./routes/auth');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var apiUsersRouter = require('./routes/api/users');
 var apiAuthRouter = require('./routes/api/auth');
-var authRouter = require('./routes/auth');
-var mongoose = require('mongoose');
-var session = require('express-session');
-var LocalStrategy = require('passport-local').Strategy;
-var Users = require('./models/users');
-var MongoStore = require('connect-mongo')(session);
-var passport = require('passport');
-var config = require('./config.dev');
-
-
-
 var app = express();
-
-//Test the file
-//console.log(config);
-
+var config = require('./config.dev');
+var mongoose = require('mongoose');
 //Connect to MongoDB
 mongoose.connect(config.mongodb, { useNewUrlParser: true });
-
+// mongoose.set('useNewUrlParser', true);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -55,12 +47,6 @@ app.use(require('express-session')({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/api/users', apiUsersRouter);
-app.use('/api/auth', apiAuthRouter);
-app.use('/auth', authRouter);
-
 passport.use(Users.createStrategy());
 passport.serializeUser(function(user, done){
   done(null,{
@@ -71,25 +57,76 @@ passport.serializeUser(function(user, done){
     last_name: user.last_name
   });
 });
-
 passport.deserializeUser(function(user, done){
   done(null, user);
 });
+app.use(function(req,res,next){
+  res.locals.session = req.session;
+  next();
+});
+app.use(function(req,res,next){
+  //Uncomment the following line to allow access to everything.
+  return next();
 
+  //Allow any endpoint that is an exact match. The server does not
+  //have access to the hash so /auth and /auth#xxx would bot be considered 
+  //exact matches.
+  var whitelist = [
+    '/',
+    '/auth'
+  ];
+
+  //req.url holds the current URL
+  //indexOf() returns the index of the matching array element
+  //-1, in this context means not found in the array
+  //so if NOT -1 means is found in the whitelist
+  //return next(); stops execution and grants access
+  if(whitelist.indexOf(req.url) !== -1){
+    return next();
+  }
+
+  //Allow access to dynamic endpoints
+  var subs = [
+    '/public/',
+    '/api/auth/'
+  ];
+
+  //The query string provides a partial URL match beginning
+  //at position 0. Both /api/auth/login and /api/auth/logout would would 
+  //be considered a match for /api/auth/
+  for(var sub of subs){
+    if(req.url.substring(0, sub.length)===sub){
+      return next();
+    }
+  }
+
+  //There is an active user session, allow access to all endpoints.
+  if(req.isAuthenticated()){
+    return next();
+  }
+
+  //There is no session nor are there any whitelist matches. Deny access and
+  //Redirect the user to the login screen.
+  return res.redirect('/auth#login');
+});
+app.use('/auth', authRouter);
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/api/users', apiUsersRouter);
+app.use('/api/auth', apiAuthRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
 
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
   // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
-
 module.exports = app;
