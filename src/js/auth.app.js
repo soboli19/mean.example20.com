@@ -1,4 +1,5 @@
 var authApp = (function() {
+
     function loginForm(){
         let app = document.getElementById('app');
         let form =  `
@@ -22,6 +23,7 @@ var authApp = (function() {
         `;
         app.innerHTML=form;
     }
+
     function registrationForm(){
         var app = document.getElementById('app');
         var form =  `
@@ -61,6 +63,7 @@ var authApp = (function() {
         `;
         app.innerHTML=form;
       }
+
       function postRequest(formId, url){
         let form = document.getElementById(formId);
         form.addEventListener('submit', function(e){
@@ -107,6 +110,7 @@ var authApp = (function() {
         }
       }
   })();
+
   var validate = (function() {
     function confirmPasswordMatch() {
       let pw = document.getElementById('password');
@@ -127,9 +131,9 @@ var authApp = (function() {
       }
     }
   })();
-  authApp.load();
+
   authApp.load();
 
-window.addEventListener("hashchange", function(){
+  window.addEventListener("hashchange", function(){
   authApp.load();
 });

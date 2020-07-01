@@ -1,7 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var passport = require('passport');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
@@ -23,11 +22,13 @@ mongoose.connect(config.mongodb, { useNewUrlParser: true });
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(require('express-session')({
   //Define the session store
   store: new MongoStore({
@@ -42,7 +43,7 @@ app.use(require('express-session')({
     domain: config.cookie.domain,
     //httpOnly: true,
     //secure: true,
-    maxAge:3600000 //1 hour
+    maxAge:7200000 //2 hour
   }
 }));
 app.use(passport.initialize());
@@ -66,7 +67,7 @@ app.use(function(req,res,next){
 });
 app.use(function(req,res,next){
   //Uncomment the following line to allow access to everything.
-  return next();
+  //return next();
 
   //Allow any endpoint that is an exact match. The server does not
   //have access to the hash so /auth and /auth#xxx would bot be considered 

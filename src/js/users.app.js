@@ -59,20 +59,78 @@ function viewUsers(){
             //Append the HTML to the #app
             app.innerHTML = table;
           }
-        //     xhr.onload = function(){
-        //   let data = JSON.parse(xhr.response);
-        //   console.log(data);
-        // }
+        
     }
 
+    function viewUser(id){
+
+        let uri = `${window.location.origin}/api/users/${id}`;
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', uri);
+      
+        xhr.setRequestHeader(
+          'Content-Type',
+          'application/json; charset=UTF-8'
+        );
+      
+        xhr.send();
+      
+        xhr.onload = function(){
+          let app = document.getElementById('app');
+          let data = JSON.parse(xhr.response);
+          let card = '';
+      
+          card = `<div class="card">
+            <div class="card-header clearfix">
+              <h2 class="h3 float-left">${data.user.first_name} ${data.user.last_name}</h2>
+              <div class="float-right">
+                <a href="#edit-${data.user._id}" class="btn btn-primary">Edit</a>
+              </div>
+            </div>
+            <div class="card-body">
+              <div>${data.user.username}</div>
+              <div>${data.user.email}</div>
+            </div>
+          </div>`;
+      
+          app.innerHTML = card;
+        }
+      }
 
     return {
-          load: function(){
-            alert('LOADED');
-            viewUsers();
+        load: function(){
+            let hash = window.location.hash;
+            let hashArray = hash.split('-');
+          
+            switch(hashArray[0]){
+              case '#create':
+                //console.log('CREATE');
+                createUser();
+                break;
+          
+              case '#view':
+                //console.log('VIEW');
+                viewUser(hashArray[1]);
+                break;
+          
+              case '#edit':
+                console.log('EDIT');
+                break;
+          
+              case '#delete':
+                console.log('DELETE');
+                break;
+          
+              default:
+                viewUsers();
+                break;
+            }
           }
         }
     
 })();
   
   usersApp.load();
+  window.addEventListener("hashchange", function(){
+    authApp.load();
+  });
