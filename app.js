@@ -12,6 +12,8 @@ var authRouter = require('./routes/auth');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var apiUsersRouter = require('./routes/api/users');
+var articlesRouter = require('./routes/articles');
+var apiArticlesRouter = require('./routes/api/articles');
 var apiAuthRouter = require('./routes/api/auth');
 var app = express();
 var config = require('./config.dev');
@@ -67,7 +69,7 @@ app.use(function(req,res,next){
 });
 app.use(function(req,res,next){
   //Uncomment the following line to allow access to everything.
-  //return next();
+  return next();
 
   //Allow any endpoint that is an exact match. The server does not
   //have access to the hash so /auth and /auth#xxx would bot be considered 
@@ -114,7 +116,10 @@ app.use('/auth', authRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/users', apiUsersRouter);
+app.use('/articles', articlesRouter);
+app.use('/api/articles', apiArticlesRouter);
 app.use('/api/auth', apiAuthRouter);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
