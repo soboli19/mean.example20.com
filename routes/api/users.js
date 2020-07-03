@@ -3,12 +3,12 @@ var router = express.Router();
 var Users = require('../../models/users');
 
 router.get('/', function(req, res, next) {
-  articles.find({},function(err, articles){
+  Users.find({},function(err, users){
     if(err){
      return res.json({'success':false, 'error': err});
     }
 
-    return res.json({'success':true, 'articles': articles});
+    return res.json({'success':true, 'users': users});
   });
 });
 

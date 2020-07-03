@@ -69,14 +69,15 @@ app.use(function(req,res,next){
 });
 app.use(function(req,res,next){
   //Uncomment the following line to allow access to everything.
-  return next();
+  //return next();
 
   //Allow any endpoint that is an exact match. The server does not
   //have access to the hash so /auth and /auth#xxx would bot be considered 
   //exact matches.
   var whitelist = [
     '/',
-    '/auth'
+    '/auth',
+    '/articles'
   ];
 
   //req.url holds the current URL
@@ -91,7 +92,8 @@ app.use(function(req,res,next){
   //Allow access to dynamic endpoints
   var subs = [
     '/public/',
-    '/api/auth/'
+    '/api/auth/',
+    '/articles'
   ];
 
   //The query string provides a partial URL match beginning
@@ -119,6 +121,7 @@ app.use('/api/users', apiUsersRouter);
 app.use('/articles', articlesRouter);
 app.use('/api/articles', apiArticlesRouter);
 app.use('/api/auth', apiAuthRouter);
+app.use('/articles', articlesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

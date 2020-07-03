@@ -1,15 +1,14 @@
 extends ../layout
 
 block content
-
-  h1 Article Management
-
+  h1= title
   hr
   for article in articles
+    hr
 
     div.article
-      a(href= '/articles/' + article.slug)
+      a(href='./' +   article.slug)
         h2= article.title
-      div!= article.description
-
-  script(src='/dist/js/articles.app.min.js')
+        div!= article.description
+    hr
+    script(src='/dist/js/articles.app.min.js')

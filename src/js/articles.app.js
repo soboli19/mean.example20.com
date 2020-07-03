@@ -17,7 +17,7 @@ var articlesApp = (function() {
             let app = document.getElementById('app');
             let data = JSON.parse(xhr.response);
             let articles = data.articles;
-            console.log(articles.length);
+            //console.log(articles.length);
             let table = '';
             let rows = '';
       
@@ -43,7 +43,7 @@ var articlesApp = (function() {
               <div class="card-header clearfix">
                 <h2 class="h3 float-left">Articles</h2>
                 <div class="float-right">
-                  <a href="#create" class="btn btn-primary">New Post</a>
+                  <a href="#create" class="btn btn-primary">New Article</a>
                 </div>
               </div>
               <div class="table-responsive">
@@ -71,38 +71,43 @@ var articlesApp = (function() {
             var form =  `
                 <div class="card">
                   <div class="card-header clearfix">
-                    <h2 class="h3 float-left">Create a New Post</h2>
+                    <h2 class="h3 float-left">Create a New Article</h2>
                     <div class="float-right">
                       <a href="#" class="btn btn-primary">Cancel</a>
                     </div>
                   </div>
                   <div class="card-body">
-                  <form id="createUser" class="card-body">
+                  <form id="createArticle" class="card-body">
                     <div id="formMsg" class="alert alert-danger text-center">Your form has errors</div>
           
                       <div class="row">
                         <div class="form-group col-md-6">
-                          <label for="first_name">Title</label>
-                          <input type="text" id="first_name" name="first_name" class="form-control" required>
+                          <label for="title">Title</label>
+                          <input type="text" id="title" name="title" class="form-control" required>
                         </div>
           
                         <div class="form-group col-md-6">
-                          <label for="last_name">Published</label>
+                          <label for="published">Published</label>
                           <input type="datetime-local" id="published" name="published" class="form-control" required>
                         </div>
                       </div>
           
                       <div class="row">
                         <div class="form-group col-md-6">
-                          <label for="username">Body</label>
+                          <label for="body">Body</label>
                           <textarea id="body" name="body" class="form-control" rows="6" required></textarea>
                         </div>
-          
-                        <div class="form-group col-md-6">
-                        <label for="description">Summary</label>
-                        <input type="text" id="description" name="description" class="form-control" required>
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="description">Summary</label>
+                                <input type="text" id="description" name="description" class="form-control" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="keywords">Keywords (separated by commas)</label>
+                                <input type="text" id="keywords" name="keywords" class="form-control" required>
+                            </div>
                         </div>
-                      </div>
           
                       <div class="text-right">
                         <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-sm-block">
@@ -141,16 +146,52 @@ var articlesApp = (function() {
                   </div>
                 </div>
                 <div class="card-body">
-                  <div>${data.article.body}</div>
-                  <div>${data.article.keywords}</div>
+                    <div class="blockquote">${data.article.body}</div>
+                    <br>
+                    <div>Tagged: <em>${data.article.keywords}</em></div>
                 </div>
               </div>`;
           
               app.innerHTML = card;
             }
-          }
+        }
         
-          function editArticle(id){
+        function viewArticle(slug){
+
+            let uri = `${window.location.origin}/api/articles/${slug}`;
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', uri);
+        
+            xhr.setRequestHeader(
+              'Content-Type',
+              'application/json; charset=UTF-8'
+            );
+        
+            xhr.send();
+        
+            xhr.onload = function(){
+        
+              let app = document.getElementById('app');
+              let data = JSON.parse(xhr.response);
+              let card = '';
+        
+              card = `<div class="card">
+                <div class="card-header clearfix">
+                  <h2 class="h3 float-left">${data.article.title}</h2>
+                </div>
+                <div class="card-body">
+                  <div class="blockquote">${data.article.body}</div>
+                  <br>
+                  <div>Tagged: <em>${data.article.keywords}</em></div>
+                </div>
+              </div>
+              `;
+        
+              app.innerHTML = card;
+            }
+        }
+
+        function editArticle(id){
   
             let uri = `${window.location.origin}/api/articles/${id}`;
             let xhr = new XMLHttpRequest();
@@ -176,8 +217,8 @@ var articlesApp = (function() {
                     </div>
                   </div>
                   <div class="card-body">
-                    <form id="editUser" class="card-body">
-                      <input type="hidden" id="_id" name="_id" value="${data.user._id}">
+                    <form id="editArticle" class="card-body">
+                      <input type="hidden" id="_id" name="_id" value="${data.article._id}">
                       <div id="formMsg" class="alert alert-danger text-center">Your form has errors</div>
             
                       <div class="row">
@@ -286,4 +327,8 @@ var articlesApp = (function() {
           }
 })()
   
-  articlesApp.load();
+articlesApp.load();
+
+window.addEventListener("hashchange", function () {
+    articlesApp.load();
+  })
